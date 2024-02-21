@@ -1,5 +1,6 @@
 class Number():
     def __init__(self,string):
+        
         #formatting to make sure everything is consisten
         if '.' not in string:
             string += "."
@@ -8,11 +9,13 @@ class Number():
         elif string[0]=='.':
             string = "+0"+string
         elif string[0:2] =="-.":
-            string.replace("-.","-0.")
-            
+            string.replace("-.","-0.") 
+        string = string.strip("0")
         self.sign = string[0]
         self.integer,self.mantissa = string[1:].split('.')
-        
+    
+    def copy(self):
+        return Number(self.__str__())
     def __str__(self):
         return self.sign + self.integer+ "." +self.mantissa
     def __neg__(self):
@@ -20,6 +23,41 @@ class Number():
         return Number(sign + self.integer + "." + self.mantissa)
     def __abs__(self):
         return Number("+" + self.integer + "." + self.mantissa) 
+    
+    def __eq__(self, other_number):
+        return self.__str__() == other_number.__str__()
+    def __ne__(self, other_number):
+        return not self.__eq__(other_number)
+    def __gt__(self,other_number):
+        if self.sign ==other_number.sign:
+            n = self - other_number
+            if n == Number('0'):
+                return False
+            elif n.sign == self.sign:
+                return self.sign == "+"
+            elif n.sign != self.sign:
+                return self.sign == "-"
+        else:
+            return self.sign == "+" # this is reversed because of where "+" and "-" are naturally sorted
+        
+    def __lt__(self,other_number):
+        if self.sign ==other_number.sign:
+            n = self - other_number
+            if n == Number('0'):
+                return False
+            elif n.sign == self.sign:
+                return self.sign == "-"
+            elif n.sign != self.sign:
+                return self.sign == "+"
+        else:
+            return self.sign == "-" # this is reversed because of where "+" and "-" are naturally sorted
+    
+    def __le__(self,other_number):
+        return self == other_number or self < other_number
+    
+    def __ge__(self,other_number):
+        return self == other_number or self > other_number
+    
     def __add__(self,other_number):
         if self.sign == other_number.sign:
             #makes sure mantissa are same length
@@ -146,8 +184,9 @@ class Number():
             digit_2 = c2[index_2]
             carry = 0
             for count_1 , index_1 in enumerate(range(len(c1)-1,-1,-1)):
-                if len(partial_solution) == max_mantissa * 2:
+                if len(partial_solution) == max_mantissa *2 :
                     partial_solution += '.'
+                    pass
                 
                 digit_1 = c1[index_1]
                 value = int(digit_1)*int(digit_2) + carry
